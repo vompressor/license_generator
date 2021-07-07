@@ -20,10 +20,10 @@ type LicenseKey struct {
 }
 
 type License struct {
-	Key            string `json:"key"`
-	Name           string `json:"name"`
+	Key            string
+	Name           string
 	SpdxID         string `json:"spdx_id"`
-	URL            string `json:"url"`
+	URL            string
 	LicenseURL     string `json:"html_url"`
 	Description    string
 	Implementation string
@@ -40,6 +40,7 @@ type cacheData struct {
 	TTL     int64
 }
 
+// cache file config
 const cacheFileHead = "lfm cache data"
 const cacheTTL = time.Hour * 24 * 3
 const cacheDir = "lfm/"

@@ -61,7 +61,7 @@ func PrintLicenseInfo(key string) {
 		print(" " + c)
 	}
 
-	print("\n limitations:")
+	print("\nlimitations:")
 	for _, c := range l.Limitations {
 		print(" " + c)
 	}
@@ -69,7 +69,7 @@ func PrintLicenseInfo(key string) {
 
 }
 
-func WriteLicenseBody(key string, w io.Writer) error {
+func WriteLicenseBody(key string, w io.Writer, year string, owner string) error {
 	l, err := GetLicenseInfo(strings.ToLower(key))
 
 	// TODO:: err type
@@ -77,7 +77,10 @@ func WriteLicenseBody(key string, w io.Writer) error {
 		return err
 	}
 
-	_, err = io.WriteString(w, l.Body)
+	year_replaced := strings.Replace(l.Body, "[year]", year, 1)
+	owner_replaced := strings.Replace(year_replaced, "[owner]", owner, 1)
+
+	_, err = io.WriteString(w, owner_replaced)
 	if err != nil {
 		return err
 	}
@@ -85,23 +88,19 @@ func WriteLicenseBody(key string, w io.Writer) error {
 	return nil
 }
 
-func WriteLicenseBodyToPath(key string, path string) error {
-	l, err := GetLicenseInfo(strings.ToLower(key))
-
-	// TODO:: err type
-	if err != nil {
-		return err
-	}
-
+func WriteLicenseBodyToPath(key string, path string, year string, owner string) error {
 	abs_path, err := filepath.Abs(path)
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(abs_path, []byte(l.Body), 0600)
+	f, err := os.Create(abs_path)
 	if err != nil {
 		return err
 	}
+	defer f.Close()
+
+	WriteLicenseBody(key, f, year, owner)
 
 	return nil
 }

@@ -19,7 +19,7 @@ func TestPrintLicenseBody(t *testing.T) {
 }
 
 func TestWriteLicenseBodyToPath(t *testing.T) {
-	err := license_generator.WriteLicenseBodyToPath("mit", "LICENSE")
+	err := license_generator.WriteLicenseBodyToPath("mit", "LICENSE", "2021", "owner")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
