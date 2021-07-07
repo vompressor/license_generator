@@ -71,16 +71,20 @@ func PrintLicenseInfo(key string) {
 
 func WriteLicenseBody(key string, w io.Writer, year string, owner string) error {
 	l, err := GetLicenseInfo(strings.ToLower(key))
+	ret := ""
 
 	// TODO:: err type
 	if err != nil {
 		return err
 	}
+	if year != "" {
+		ret = strings.Replace(l.Body, "[year]", year, 1)
+	}
+	if owner != "" {
+		ret = strings.Replace(ret, "[owner]", owner, 1)
+	}
 
-	year_replaced := strings.Replace(l.Body, "[year]", year, 1)
-	owner_replaced := strings.Replace(year_replaced, "[owner]", owner, 1)
-
-	_, err = io.WriteString(w, owner_replaced)
+	_, err = io.WriteString(w, ret)
 	if err != nil {
 		return err
 	}
