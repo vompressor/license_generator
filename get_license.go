@@ -10,8 +10,15 @@ import (
 	"time"
 )
 
+
 const githubLicenseAPI = "https://api.github.com/licenses"
 
+// TODO::
+const vompressorLicenseInfoAPI = ""
+var useCache = true
+//
+
+// LicenseKey is Struct of license key, name, and URL to get detail information.
 type LicenseKey struct {
 	Key    string `json:"key"`
 	Name   string `json:"name"`
@@ -19,6 +26,7 @@ type LicenseKey struct {
 	URL    string `json:"url"`
 }
 
+// License is Struct of Contains detailed information about the license.
 type License struct {
 	Key            string
 	Name           string

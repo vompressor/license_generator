@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// PrintLicenseList is Prints the license list received from the github api.
 func PrintLicenseList() {
 	keys, err := GetLicenseKeys()
 
@@ -22,6 +23,7 @@ func PrintLicenseList() {
 	}
 }
 
+// PrintLicenseBody is Prints the license body received from the github api.
 func PrintLicenseBody(key string) {
 	l, err := GetLicenseInfo(strings.ToLower(key))
 
@@ -34,6 +36,7 @@ func PrintLicenseBody(key string) {
 	println(l.Body)
 }
 
+// PrintLicenseInfo is Prints general information about the license.
 func PrintLicenseInfo(key string) {
 	l, err := GetLicenseInfo(strings.ToLower(key))
 
@@ -69,6 +72,7 @@ func PrintLicenseInfo(key string) {
 
 }
 
+// WriteLicenseBody is Write license body to input io.Writer
 func WriteLicenseBody(key string, w io.Writer, year string, owner string) error {
 	l, err := GetLicenseInfo(strings.ToLower(key))
 	ret := ""
@@ -93,6 +97,7 @@ func WriteLicenseBody(key string, w io.Writer, year string, owner string) error 
 	return nil
 }
 
+// WriteLicenseBody is Write license body to input path
 func WriteLicenseBodyToPath(key string, path string, year string, owner string) error {
 	abs_path, err := filepath.Abs(path)
 	if err != nil {
