@@ -82,6 +82,7 @@ func WriteLicenseBody(key string, w io.Writer, year string, owner string) error 
 	}
 	if owner != "" {
 		ret = strings.Replace(ret, "[owner]", owner, 1)
+		ret = strings.Replace(ret, "[fullname]", owner, 1)
 	}
 
 	_, err = io.WriteString(w, ret)
