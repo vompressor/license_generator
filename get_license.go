@@ -3,6 +3,7 @@ package license_generator
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -10,12 +11,13 @@ import (
 	"time"
 )
 
-
 const githubLicenseAPI = "https://api.github.com/licenses"
 
 // TODO::
 const vompressorLicenseInfoAPI = ""
+
 var useCache = true
+
 //
 
 // LicenseKey is Struct of license key, name, and URL to get detail information.
@@ -85,22 +87,6 @@ func cacheThis(name string, item interface{}, ttl time.Duration) error {
 	return nil
 }
 
-type TTLExpireError struct {
-	TTL      time.Duration
-	ExpireAt time.Time
-}
-
-func (e TTLExpireError) Error() string {
-	return ""
-}
-
-type WrongCacheError struct {
-}
-
-func (e WrongCacheError) Error() string {
-	return ""
-}
-
 // TODO:: error impl
 
 func readCache(name string, d interface{}) error {
@@ -142,6 +128,8 @@ func readCache(name string, d interface{}) error {
 
 	if time.Now().Unix() > cd.Expire {
 		var e TTLExpireError
+		e.ExpireAt = time.Unix(cd.Expire, 0)
+		e.TTL = time.Duration(cd.TTL)
 		return e
 	}
 
@@ -176,7 +164,7 @@ func GetLicenseKeys() ([]LicenseKey, error) {
 
 	req, err := http.NewRequest("GET", githubLicenseAPI, nil)
 	if err != nil {
-		return nil, err
+		return nil, ServerError{1, err}
 	}
 
 	req.Header.Add("accept", "application/vnd.github.v3+json")
@@ -184,12 +172,11 @@ func GetLicenseKeys() ([]LicenseKey, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, ServerError{1, err}
 	}
 
-	// TODO:: err
 	if resp.StatusCode != 200 {
-		return nil, http.ErrNoLocation
+		return nil, HttpCodeError{HttpCode: resp.StatusCode}
 	}
 
 	defer resp.Body.Close()
@@ -224,12 +211,11 @@ func GetLicenseInfo(license string) (*License, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, ServerError{1, err}
 	}
 
-	// TODO:: err
 	if resp.StatusCode != 200 {
-		return nil, http.ErrNoLocation
+		return nil, HttpCodeError{HttpCode: resp.StatusCode}
 	}
 
 	defer resp.Body.Close()
@@ -242,4 +228,41 @@ func GetLicenseInfo(license string) (*License, error) {
 	cacheThis(license, ret, cacheTTL)
 
 	return &ret, nil
+}
+
+type TTLExpireError struct {
+	TTL      time.Duration
+	ExpireAt time.Time
+}
+
+func (e TTLExpireError) Error() string {
+	return fmt.Sprintf("%f over...", time.Now().Sub(e.ExpireAt).Seconds())
+}
+
+type WrongCacheError struct {
+}
+
+func (e WrongCacheError) Error() string {
+	return "Invalid cache file"
+}
+
+type HttpCodeError struct {
+	HttpCode int
+}
+
+func (e HttpCodeError) Error() string {
+	return http.StatusText(e.HttpCode)
+}
+
+type ServerError struct {
+	Code      int
+	SourceErr error
+}
+
+func (e ServerError) Error() string {
+	return ecode[e.Code]
+}
+
+var ecode = map[int]string{
+	1: "server error",
 }

@@ -9,41 +9,41 @@ import (
 )
 
 // PrintLicenseList is Prints the license list received from the github api.
-func PrintLicenseList() {
+func PrintLicenseList() error {
 	keys, err := GetLicenseKeys()
 
 	if err != nil {
-		println("GitHub License api not work...")
-		os.Exit(1)
+		return err
 	}
 
 	println("key : id : name")
 	for _, key := range keys {
 		fmt.Printf("%s : %s : %s\n", key.Key, key.SpdxID, key.Name)
 	}
+	return nil
 }
 
 // PrintLicenseBody is Prints the license body received from the github api.
-func PrintLicenseBody(key string) {
+func PrintLicenseBody(key string) error {
 	l, err := GetLicenseInfo(strings.ToLower(key))
 
 	// TODO:: err type
 	if err != nil {
-		println("Invalid input...")
-		os.Exit(1)
+		return err
 	}
 
 	println(l.Body)
+
+	return nil
 }
 
 // PrintLicenseInfo is Prints general information about the license.
-func PrintLicenseInfo(key string) {
+func PrintLicenseInfo(key string) error {
 	l, err := GetLicenseInfo(strings.ToLower(key))
 
 	// TODO:: err type
 	if err != nil {
-		println("Invalid input...")
-		os.Exit(1)
+		return err
 	}
 
 	fmt.Printf("key: %s\n", l.Key)
@@ -69,20 +69,20 @@ func PrintLicenseInfo(key string) {
 		print(" " + c)
 	}
 	print("\n")
-
+	return nil
 }
 
 // WriteLicenseBody is Write license body to input io.Writer
 func WriteLicenseBody(key string, w io.Writer, year string, owner string) error {
 	l, err := GetLicenseInfo(strings.ToLower(key))
-	ret := ""
+	ret := l.Body
 
 	// TODO:: err type
 	if err != nil {
 		return err
 	}
 	if year != "" {
-		ret = strings.Replace(l.Body, "[year]", year, 1)
+		ret = strings.Replace(ret, "[year]", year, 1)
 	}
 	if owner != "" {
 		ret = strings.Replace(ret, "[owner]", owner, 1)
