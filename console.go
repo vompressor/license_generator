@@ -114,3 +114,20 @@ func WriteLicenseBodyToPath(key string, path string, year string, owner string) 
 
 	return nil
 }
+
+func CreateREADMEmd(dirPath string) error {
+	abs_path, err := filepath.Abs(dirPath)
+	if err != nil {
+		return err
+	}
+
+	readme_path := filepath.Join(abs_path, "README.md")
+
+	f, err := os.Create(readme_path)
+
+	if err != nil {
+		return err
+	}
+	f.Close()
+	return nil
+}
