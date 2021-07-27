@@ -6,7 +6,14 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/vompressor/vfmlib/color"
+	"github.com/vompressor/vfmlib/color/text_color"
 )
+
+const IconCheck rune = '\u2713'
+const IconCross rune = '\u2717'
+const IconInfo rune = 128712
 
 // PrintLicenseList is Prints the license list received from the github api.
 func PrintLicenseList() error {
@@ -54,20 +61,33 @@ func PrintLicenseInfo(key string) error {
 
 	fmt.Printf("\nimplementation:\n%s\n", l.Implementation)
 
-	print("\npermissions:")
+	print("\npermissions:\n")
 	for _, c := range l.Permissions {
-		print(" " + c)
+		fmt.Printf(
+			" %s %s\n",
+			color.NewAtt(text_color.HiGreen).ColorString(string(IconCheck)),
+			c,
+		)
 	}
 
-	print("\nconditions:")
-	for _, c := range l.Conditions {
-		print(" " + c)
-	}
-
-	print("\nlimitations:")
+	print("\nlimitations:\n")
 	for _, c := range l.Limitations {
-		print(" " + c)
+		fmt.Printf(
+			" %s %s\n",
+			color.NewAtt(text_color.HiRed).ColorString(string(IconCross)),
+			c,
+		)
 	}
+
+	print("\nconditions:\n")
+	for _, c := range l.Conditions {
+		fmt.Printf(
+			" %s %s\n",
+			color.NewAtt(text_color.HiBlue).ColorString(string(IconInfo)),
+			c,
+		)
+	}
+
 	print("\n")
 	return nil
 }

@@ -11,7 +11,7 @@ func TestPrintLicenseList(t *testing.T) {
 }
 
 func TestPrintLicenseInfo(t *testing.T) {
-	license_generator.PrintLicenseInfo("Apache-2.0")
+	license_generator.PrintLicenseInfo("mit")
 }
 
 func TestPrintLicenseBody(t *testing.T) {
@@ -23,4 +23,10 @@ func TestWriteLicenseBodyToPath(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
+}
+
+func TestPrintUnicode(t *testing.T) {
+	println("✓ \u2713")
+	println("✗ \u2717")
+
 }
